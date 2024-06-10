@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(QGalleryWidget VERSION 0.1 LANGUAGES CXX)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-set(PQGALLERYWIDGET_SOURCES
+set(QGALLERYWIDGET_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/galleryphotowidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/galleryphotowidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/gallerywidget.h
@@ -16,7 +14,7 @@ set(PQGALLERYWIDGET_SOURCES
     CACHE INTERNAL "PQGalleryWidget sources"
 )
 
-set(PQGALLERYWIDGET_INCLUDE
+set(QGALLERYWIDGET_INCLUDE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     CACHE INTERNAL "PQGalleryWidget include"
 )
