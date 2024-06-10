@@ -1,4 +1,5 @@
 #include "interactivebuttonbase.h"
+#include <QPainterPath>
 
 /**
  * 所有内容的初始化
@@ -456,7 +457,7 @@ void InteractiveButtonBase::setFontSizeT(int f)
 void InteractiveButtonBase::setHover()
 {
     if (!hovering && inArea(mapFromGlobal(QCursor::pos())))
-        InteractiveButtonBase::enterEvent(new QEvent(QEvent::Type::None));
+        enterEvent1();;
 }
 
 /**
@@ -806,24 +807,31 @@ bool InteractiveButtonBase::getState()
  */
 void InteractiveButtonBase::simulateStatePress(bool s)
 {
-    if (getState() == s)
-        return ;
+    if (getState() == s || inArea(mapFromGlobal(QCursor::pos())))
+        return;
 
-    if (inArea(mapFromGlobal(QCursor::pos()))) // 点击当前按钮，不需要再模拟了
-        return ;
+    QPoint center = rect().center();
 
-    mousePressEvent(new QMouseEvent(QMouseEvent::Type::None, QPoint(size().width()/2,size().height()/2), Qt::LeftButton, Qt::NoButton, Qt::NoModifier));
+    QMouseEvent pressEvent(QEvent::MouseButtonPress, center, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QCoreApplication::postEvent(this, &pressEvent);
 
-    mouseReleaseEvent(new QMouseEvent(QMouseEvent::Type::None, QPoint(size().width()/2,size().height()/2), Qt::LeftButton, Qt::NoButton, Qt::NoModifier));
+    QMouseEvent releaseEvent(QEvent::MouseButtonRelease, center, Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+    QCoreApplication::postEvent(this, &releaseEvent);
 
-    // if (!inArea(mapFromGlobal(QCursor::pos()))) // 针对模拟release 后面 // 必定成立
-        hovering = false;
+    hovering = false;
 }
+
 
 /**
  * 鼠标移入事件，触发 hover 时间戳
  */
-void InteractiveButtonBase::enterEvent(QEvent *event)
+void InteractiveButtonBase::enterEvent(QEnterEvent *event)
+{
+    enterEvent1();
+    return QPushButton::enterEvent(event);
+}
+
+void InteractiveButtonBase::enterEvent1()
 {
     if (!anchor_timer->isActive())
     {
@@ -834,8 +842,6 @@ void InteractiveButtonBase::enterEvent(QEvent *event)
     leave_timestamp = 0;
     if (mouse_pos == QPoint(-1,-1))
         mouse_pos = mapFromGlobal(QCursor::pos());
-
-    return QPushButton::enterEvent(event);
 }
 
 /**
@@ -861,7 +867,7 @@ void InteractiveButtonBase::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
         if (!hovering)
-            InteractiveButtonBase::enterEvent(new QEvent(QEvent::Type::None));
+            enterEvent1();
 
         pressing = true;
         press_pos = mouse_pos;
@@ -999,7 +1005,7 @@ void InteractiveButtonBase::resizeEvent(QResizeEvent *event)
 void InteractiveButtonBase::focusInEvent(QFocusEvent *event)
 {
     if (!hovering && inArea(mapFromGlobal(QCursor::pos())))
-        InteractiveButtonBase::enterEvent(new QEvent(QEvent::Type::None));
+        enterEvent1();;
 
     return QPushButton::focusInEvent(event);
 }

@@ -2,6 +2,7 @@
 #define WATERZOOMBUTTON_H
 
 #include <QObject>
+#include <QPainterPath>
 #include "interactivebuttonbase.h"
 
 class WaterZoomButton : public InteractiveButtonBase
